@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Elementos con alquimia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        
+        :root {
+            --bg: #fdfaf6;
+            --sidebar: #2d2b1e;
+            --sidebar-text: #f5f3ed;
+            --topbar: #f5f3ed;
+            --text: #2d2b1e;
+            --text-soft: #5a4634;
+            --card: #f5f3ed;
+            --card-hover: #f3ead6;
+            --card-border: #e6e1d5;
+            --gold: #d8b26e;
+            --green: #2a806a;
+            --indigo: #2d2a7b;
+            --radius: 14px;
+            --shadow: 0 2px 8px rgba(45, 43, 30, .10);
+        }
+
+        /* ===== Base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text);
+            background-color: var(--bg);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--indigo);
+            outline-offset: 2px;
+        }
+
+        .icon {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ===== Layout ===== */
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 0;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+
+        .sidebar h1 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 28px;
+            font-weight: 400;
+            padding: 0 40px;
+            margin-bottom: 48px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            min-height: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) transparent;
+        }
+
+        .nav-item {
+            font-size: 18px;
+            padding: 16px 40px;
+            margin: 0 20px;
+            border-radius: var(--radius);
+            transition: background-color .2s ease, color .2s ease;
+        }
+
+        .nav-menu div.nav-item {
+            font-size: 14px;
+            opacity: .7;
+            padding-bottom: 0;
+        }
+
+        .nav-menu a.nav-item:hover,
+        .nav-sub a:hover {
+            background-color: rgba(255, 255, 255, .12);
+        }
+
+        .nav-item.active,
+        .nav-menu a.nav-item.active:hover {
+            background-color: var(--gold);
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .nav-row {
+            position: relative;
+        }
+
+        .nav-row .nav-item {
+            display: block;
+        }
+
+        .nav-toggle {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-toggle svg {
+            width: 18px;
+            height: 18px;
+            transition: transform .2s ease;
+        }
+
+        .nav-toggle[aria-expanded="false"] svg {
+            transform: rotate(-90deg);
+        }
+
+        .nav-sub {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: -8px;
+        }
+
+        .nav-sub[hidden] {
+            display: none;
+        }
+
+        .nav-sub a {
+            display: block;
+            font-size: 16px;
+            padding: 8px 20px 8px 64px;
+            margin: 0 20px;
+            border-radius: var(--radius);
+            opacity: .85;
+            transition: background-color .2s ease;
+        }
+
+        .nav-empty {
+            font-size: 14px;
+            padding: 4px 20px 4px 64px;
+            opacity: .6;
+        }
+
+        .scrim {
+            display: none;
+        }
+
+        /* ===== Topbar ===== */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg);
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 80px;
+            background-color: var(--topbar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 0 var(--card-border);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .brand-logo {
+            height: 52px;
+            width: auto;
+            display: block;
+            mix-blend-mode: multiply; /* oculta el fondo blanco del PNG sobre la topbar */
+        }
+
+        .topbar-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-bar {
+            background-color: var(--bg);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            padding: 5px 20px;
+            width: 350px;
+            height: 40px;
+            transition: box-shadow .2s ease;
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 0 0 3px var(--indigo);
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-soft);
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+            /* icono de mientras en lo q se pone el de la lupa */
+        }
+
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            background-color: var(--indigo);
+            color: #fdfaf6;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        /* ===== Contenido ===== */
+        .content {
+            padding: 40px;
+            overflow-y: auto;
+            flex-grow: 1;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) transparent;
+        }
+
+        .greeting {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 32px;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+
+        .greeting-sub {
+            color: var(--text-soft);
+            margin: 4px 0 40px;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
+
+        /* ===== Alertas de stock bajo ===== */
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .alert-card {
+            background-color: var(--card);
+            border-bottom: 4px solid var(--gold);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            min-height: 90px;
+            width: 100%;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .alert-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            color: var(--gold);
+        }
+
+        .alert-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alert-info small {
+            color: var(--text-soft);
+        }
+
+        .alert-action {
+            color: var(--green);
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .alert-action:hover {
+            text-decoration: underline;
+        }
+
+        .stock-bar {
+            height: 6px;
+            border-radius: 6px;
+            background-color: var(--card-border);
+            overflow: hidden;
+        }
+
+        .stock-bar span {
+            display: block;
+            height: 100%;
+            border-radius: 6px;
+            background-color: var(--green);
+        }
+
+        .stock-bar span.warn {
+            background-color: var(--gold);
+        }
+
+        /* ===== Cards de inventarios ===== */
+        .inventories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 32px;
+            max-width: 900px;
+        }
+
+        .inventory-item {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            outline: none;
+        }
+
+        .inventory-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            padding: 20px;
+            transition: box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+        }
+
+        /* Hover tipo seleccion*/
+        .inventory-item:hover .inventory-card {
+            background-color: var(--card-hover);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold);
+            color:#d8b26e;
+        }
+
+        .inventory-item:focus-visible .inventory-card {
+            box-shadow: 0 0 0 3px var(--indigo);
+        }
+
+        .card-number {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 64px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .card-label {
+            color: var(--text-soft);
+        }
+
+        .inventory-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .inventory-name {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .inventory-desc {
+            color: var(--text-soft);
+            font-size: 15px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .empty {
+            grid-column: 1 / -1;
+            color: var(--text-soft);
+        }
+
+        .link {
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Movil o tablet ===== */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                transform: translateX(-100%);
+                transition: transform .25s ease;
+            }
+
+            .menu-open .sidebar {
+                transform: none;
+            }
+
+            .menu-open .scrim {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background-color: rgba(45, 43, 30, .5);
+                z-index: 10;
+            }
+
+            .menu-btn {
+                display: flex;
+            }
+
+            .topbar,
+            .content {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .brand-logo {
+                height: 40px;
+            }
+
+            .search-bar {
+                width: 180px;
+            }
+
+            .alerts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .search-bar {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+
+            <h1>Usuario</h1>
+            <nav class="nav-menu">
+                <div class="nav-item">Menú</div>
+                <a href="index.html" class="nav-item active" aria-current="page">Dashboard</a>
+                <div class="nav-row">
+                    <a href="inventarios.html" class="nav-item">Inventarios</a>
+                    <button class="nav-toggle" id="nav-toggle" aria-expanded="true" aria-label="Mostrar u ocultar inventarios">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                </div>
+
+                <ul class="nav-sub" id="nav-inventarios"></ul>
+                <a href="productos.html" class="nav-item">Productos</a>
+                <a href="insumos.html" class="nav-item">Insumos</a>
+            </nav>
+        </aside>
+        <div class="scrim" id="scrim"></div>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" id="menu-btn" aria-label="Abrir menú">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                    </button>
+                    <a href="index.html">
+                        <img class="brand-logo" src="logo.png" alt="Elementos con alquimia">
+                    </a>
+                </div>
+                <div class="topbar-controls">
+                    <div class="search-bar">
+                        <input type="text" aria-label="Buscar">
+                        <span class="search-icon"></span>
+                    </div>
+                    <div class="user-profile">U</div>
+                </div>
+            </header>
+
+            <main class="content">
+                <h2 class="greeting" id="saludo">Buenas tardes, Usuario!</h2>
+                <p class="greeting-sub">Esto es lo que necesita tu atención hoy.</p>
+
+                <h2 class="section-title">Alertas de stock bajo</h2>
+                <div class="alerts-grid">
+                    <div class="alert-card">
+                        <svg class="alert-icon icon" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4M12 17v.01"/></svg>
+                        <div class="alert-info">
+                            <span>Producto A</span>
+                            <div class="stock-bar"><span class="warn" style="width: 15%"></span></div>
+                            <small>Quedan 3 de 20</small>
+                        </div>
+                        <a href="productos.html" class="alert-action">Reabastecer</a>
+                    </div>
+                    <div class="alert-card">
+                        <svg class="alert-icon icon" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4M12 17v.01"/></svg>
+                        <div class="alert-info">
+                            <span>Producto B</span>
+                            <div class="stock-bar"><span class="warn" style="width: 25%"></span></div>
+                            <small>Quedan 5 de 20</small>
+                        </div>
+                        <a href="productos.html" class="alert-action">Reabastecer</a>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Inventarios</h2>
+                <div class="inventories-grid" id="grid"></div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // ===== Datos compartidos con inventarios.html =====
+        // los inventarios se guardan en localStorage con esta misma clave en las dos pantallas
+        // reemplazar esto con la conexion a la base de datos 
+        const KEY = 'eca_inventarios_v1';
+        const SEED = [
+            { id: 1, nombre: 'Almacen principal', descripcion: 'Comentario de ejemplo', productos: 24, baja: false },
+            { id: 2, nombre: 'Colectivo', descripcion: 'Av. Sonora y calle 30', productos: 18, baja: false },
+            { id: 3, nombre: 'Inventario 3', descripcion: 'Otra direccion de ejemplo', productos: 31, baja: false }
+        ];
+
+        function cargar() {
+            try {
+                const s = localStorage.getItem(KEY);
+                if (s) return JSON.parse(s);
+            } catch (e) {}
+            return JSON.parse(JSON.stringify(SEED));
+        }
+
+        const inventarios = cargar();
+
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+        // ===== Sidebar: inventarios activos =====
+        function renderSidebar() {
+            const ul = document.getElementById('nav-inventarios');
+            const activos = inventarios.filter(i => !i.baja);
+            ul.innerHTML = activos.length
+                ? activos.map(i => `<li><a href="inventario.html?id=${i.id}">${esc(i.nombre)}</a></li>`).join('')
+                : '<li class="nav-empty">Sin inventarios activos</li>';
+        }
+
+        // ===== Card de inventario =====
+        function cardHTML(i) {
+            return `
+                <a class="inventory-item" href="inventario.html?id=${i.id}">
+                    <div class="inventory-card">
+                        <div class="card-number">${i.productos}</div>
+                        <div class="card-label">productos</div>
+                    </div>
+                    <div class="inventory-text">
+                        <span class="inventory-name">${esc(i.nombre)}</span>
+                        <span class="inventory-desc">${esc(i.descripcion || '')}</span>
+                    </div>
+                </a>`;
+        }
+
+        // ===== Menú: submenú plegable y menú móvil =====
+        document.getElementById('nav-toggle').addEventListener('click', e => {
+            const ul = document.getElementById('nav-inventarios');
+            ul.hidden = !ul.hidden;
+            e.currentTarget.setAttribute('aria-expanded', !ul.hidden);
+        });
+
+        const alternarMenu = () => document.body.classList.toggle('menu-open');
+        document.getElementById('menu-btn').addEventListener('click', alternarMenu);
+        document.getElementById('scrim').addEventListener('click', alternarMenu);
+
+        // ===== Esta pantalla =====
+        renderSidebar();
+
+        // Saludo según la hora del día
+        const h = new Date().getHours();
+        const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+        document.getElementById('saludo').textContent = saludo + ', Usuario!';
+
+        // Solo se muestran los inventarios activos (los dados de baja no aparecen aquí)
+        const activos = inventarios.filter(i => !i.baja);
+        document.getElementById('grid').innerHTML = activos.length
+            ? activos.map(cardHTML).join('')
+            : '<p class="empty">Aún no tienes inventarios activos. <a href="inventarios.html" class="link">Ir a Inventarios</a></p>';
+    </script>
+
+</body>
+</html>
