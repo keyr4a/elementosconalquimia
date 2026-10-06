@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Elementos con alquimia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
+
+    <style>
+        /* ===== Estilos propios de esta pantalla (el resto está en shared.css) ===== */
+
+        .inv-title {
+            margin-bottom: 32px;
+        }
+
+        .sub-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 22px;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="content">
+        <h2 class="section-title inv-title" id="titulo">Inventario</h2>
+
+        <p class="empty" id="no-encontrado" hidden>
+            No se encontró este inventario. <a href="inventarios.html" class="link">Ir a Inventarios</a>
+        </p>
+
+        <section id="vista">
+            <div class="page-header">
+                <h3 class="sub-title">Productos</h3>
+                <div class="header-actions">
+                    <button class="round-btn" id="btn-agregar" aria-label="Agregar producto" title="Agregar producto">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <button class="round-btn" id="btn-baja" aria-label="Dar de baja productos" aria-pressed="false" title="Dar de baja productos">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                    </button>
+                </div>
+            </div>
+            <p class="hint" id="hint"></p>
+
+            <div class="products-grid" id="grid"></div>
+        </section>
+    </main>
+
+    <dialog id="dlg">
+        <form method="dialog" id="form-producto">
+            <h3 id="dlg-titulo">Nuevo producto</h3>
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" maxlength="40" required autocomplete="off">
+            <div class="field-row">
+                <div>
+                    <label for="precio">Precio (MXN)</label>
+                    <input id="precio" type="number" min="0" step="0.01" required>
+                </div>
+                <div>
+                    <label for="stock">Stock</label>
+                    <input id="stock" type="number" min="0" step="1" required>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn" id="cancelar">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="dlg-guardar">Crear producto</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="shared.js"></script>
+    <script>
+        // El inventario se abre con inventario.html?id=1
+        const invId = Number(new URLSearchParams(location.search).get('id'));
+        montarLayout({ activo: 'inventarios', buscar: 'Buscar producto', inventario: invId });
+
+        const inv = inventarios.find(i => i.id === invId);
+
+        if (!inv) {
+            document.getElementById('titulo').textContent = 'Inventario';
+            document.getElementById('vista').hidden = true;
+            document.getElementById('no-encontrado').hidden = false;
+        } else {
+            iniciar();
+        }
+
+        function iniciar() {
+            document.getElementById('titulo').textContent = inv.nombre;
+            document.title = inv.nombre + ' - Elementos con alquimia';
+
+            // Los productos que no tienen "inventarioId" (los creados en Productos) se muestran en este inventario
+            const INV_POR_DEFECTO = 1;
+            const pertenece = p => (p.inventarioId ?? INV_POR_DEFECTO) === inv.id;
+
+            let productos = cargar(LS_PRODUCTOS, SEMILLA_PRODUCTOS);
+
+            const STOCK_BAJO = 5;       // a partir de este número se marca "(bajo)"
+            let modoBaja = false;
+            let filtro = '';
+            let editandoId = null;      // null = creando un producto nuevo
+
+            const grid = document.getElementById('grid');
+            const hint = document.getElementById('hint');
+            const btnBaja = document.getElementById('btn-baja');
+            const dlg = document.getElementById('dlg');
+
+            const iconoProducto = '<svg class="icon" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 10a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/><path d="M7.5 15h9"/></svg>';
+            const iconoEditar = '<svg class="icon" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>';
+
+            const tarjetaNueva = `
+                <button class="new-card" id="card-nuevo" aria-label="Nuevo producto">
+                    <div class="new-circle"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+                </button>`;
+
+            const formatoPrecio = p => '$' + Number(p).toLocaleString('es-MX', {
+                minimumFractionDigits: p % 1 === 0 ? 0 : 2,
+                maximumFractionDigits: 2
+            }) + ' MXN';
+
+            function cardProductoHTML(p) {
+                const bajo = p.stock <= STOCK_BAJO;
+                return `
+                    <div class="product-card${p.baja ? ' is-baja' : ''}" data-id="${p.id}">
+                        <div class="product-img">
+                            ${p.baja ? '<span class="badge">De baja</span>' : ''}
+                            ${iconoProducto}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-top">
+                                <span class="product-name">${esc(p.nombre)}</span>
+                                <button class="edit-btn" aria-label="Editar ${esc(p.nombre)}" title="Editar">${iconoEditar}</button>
+                            </div>
+                            <span class="product-price">${formatoPrecio(p.precio)}</span>
+                            <span class="product-stock${bajo ? ' low' : ''}">Stock: ${p.stock}${bajo ? ' (bajo)' : ''}</span>
+                            <a class="btn-insumos" href="producto-insumos.html?id=${p.id}">Insumos</a>
+                        </div>
+                    </div>`;
+            }
+
+            function render() {
+                grid.classList.toggle('baja-mode', modoBaja);
+                btnBaja.classList.toggle('active', modoBaja);
+                btnBaja.setAttribute('aria-pressed', modoBaja);
+                hint.textContent = modoBaja
+                    ? 'Modo baja: toca un producto para darlo de baja. Si ya está de baja, tócalo para restablecerlo.'
+                    : '';
+
+                const q = filtro.toLowerCase();
+                let lista = productos.filter(p => pertenece(p) && p.nombre.toLowerCase().includes(q));
+                lista.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { numeric: true }));
+                lista = [...lista.filter(p => !p.baja), ...lista.filter(p => p.baja)]; // los de baja al final
+
+                let vacio = '';
+                if (!lista.length) {
+                    vacio = filtro
+                        ? `<p class="empty">Ningún producto coincide con "${esc(filtro)}".</p>`
+                        : '<p class="empty">Este inventario aún no tiene productos. Crea el primero.</p>';
+                }
+                grid.innerHTML = vacio + lista.map(cardProductoHTML).join('') + tarjetaNueva;
+            }
+
+            function actualizar() {
+                guardarLS(LS_PRODUCTOS, productos);
+                // Mantiene al día el número de productos que se ve en las cards de Inventarios y Dashboard
+                inv.productos = productos.filter(p => pertenece(p) && !p.baja).length;
+                guardar();
+                render();
+            }
+
+            // Sin producto = crear uno nuevo; con producto = editarlo
+            function abrirDialogo(p) {
+                editandoId = p ? p.id : null;
+                document.getElementById('form-producto').reset();
+                document.getElementById('dlg-titulo').textContent = p ? 'Editar producto' : 'Nuevo producto';
+                document.getElementById('dlg-guardar').textContent = p ? 'Guardar cambios' : 'Crear producto';
+                if (p) {
+                    document.getElementById('nombre').value = p.nombre;
+                    document.getElementById('precio').value = p.precio;
+                    document.getElementById('stock').value = p.stock;
+                }
+                dlg.showModal();
+                document.getElementById('nombre').focus();
+            }
+
+            function darDeBaja(p) {
+                p.baja = true;
+                actualizar();
+                toast('"' + p.nombre + '" se dio de baja.', () => { p.baja = false; actualizar(); });
+            }
+
+            function restablecer(p) {
+                confirmar(
+                    '¿Restablecer este producto?',
+                    '"' + p.nombre + '" volverá a estar activo.',
+                    'Restablecer',
+                    () => { p.baja = false; actualizar(); }
+                );
+            }
+
+            grid.addEventListener('click', e => {
+                if (e.target.closest('#card-nuevo')) return abrirDialogo();
+
+                const card = e.target.closest('.product-card');
+                if (!card) return;
+                const p = productos.find(x => x.id === Number(card.dataset.id));
+
+                // En modo baja (o si ya está de baja) toda la card responde y los enlaces no navegan
+                if (p.baja || modoBaja) {
+                    e.preventDefault();
+                    return p.baja ? restablecer(p) : darDeBaja(p);
+                }
+                if (e.target.closest('.edit-btn')) abrirDialogo(p);
+            });
+
+            document.getElementById('btn-agregar').addEventListener('click', () => abrirDialogo());
+            btnBaja.addEventListener('click', () => { modoBaja = !modoBaja; render(); });
+            document.getElementById('cancelar').addEventListener('click', () => dlg.close());
+            document.getElementById('buscar').addEventListener('input', e => { filtro = e.target.value.trim(); render(); });
+
+            document.getElementById('form-producto').addEventListener('submit', () => {
+                const datos = {
+                    nombre: document.getElementById('nombre').value.trim(),
+                    precio: parseFloat(document.getElementById('precio').value),
+                    stock: parseInt(document.getElementById('stock').value, 10)
+                };
+                if (!datos.nombre) return;
+
+                if (editandoId !== null) {
+                    Object.assign(productos.find(x => x.id === editandoId), datos);
+                } else {
+                    const id = Math.max(0, ...productos.map(x => x.id)) + 1;
+                    productos.push({ id, ...datos, inventarioId: inv.id, baja: false });
+                }
+                actualizar();
+            });
+
+            render();
+        }
+    </script>
+
+</body>
+</html>

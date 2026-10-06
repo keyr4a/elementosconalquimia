@@ -6,357 +6,12 @@
     <title>Insumos - Elementos con alquimia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
 
     <style>
-        :root {
-            --bg: #fdfaf6;
-            --sidebar: #2d2b1e;
-            --sidebar-text: #f5f3ed;
-            --topbar: #f5f3ed;
-            --text: #2d2b1e;
-            --text-soft: #5a4634;
-            --card: #f5f3ed;
-            --card-hover: #f3ead6;
-            --card-border: #e6e1d5;
-            --gold: #d8b26e;
-            --green: #2a806a;
-            --indigo: #2d2a7b;
-            --radius: 14px;
-            --shadow: 0 2px 8px rgba(45, 43, 30, .10);
-        }
-
-        /* ===== Base ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: var(--text);
-            background-color: var(--bg);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        button,
-        select,
-        input {
-            font-family: inherit;
-            font-size: inherit;
-            color: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        :focus-visible {
-            outline: 3px solid var(--indigo);
-            outline-offset: 2px;
-        }
-
-        .icon {
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ===== Layout ===== */
-        .app-layout {
-            display: flex;
-            height: 100vh;
-            width: 100%;
-        }
-
-        /* ===== Sidebar ===== */
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            padding: 40px 0;
-            flex-shrink: 0;
-            z-index: 20;
-        }
-
-        .sidebar h1 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 28px;
-            font-weight: 400;
-            padding: 0 40px;
-            margin-bottom: 48px;
-        }
-
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-            min-height: 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) transparent;
-        }
-
-        .nav-item {
-            font-size: 18px;
-            padding: 16px 40px;
-            margin: 0 20px;
-            border-radius: var(--radius);
-            transition: background-color .2s ease, color .2s ease;
-        }
-
-        .nav-menu div.nav-item {
-            font-size: 14px;
-            opacity: .7;
-            padding-bottom: 0;
-        }
-
-        .nav-menu a.nav-item:hover,
-        .nav-sub a:hover {
-            background-color: rgba(255, 255, 255, .12);
-        }
-
-        .nav-item.active,
-        .nav-menu a.nav-item.active:hover {
-            background-color: var(--gold);
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .nav-row {
-            position: relative;
-        }
-
-        .nav-row .nav-item {
-            display: block;
-        }
-
-        .nav-toggle {
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 50%;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-toggle svg {
-            width: 18px;
-            height: 18px;
-            transition: transform .2s ease;
-        }
-
-        .nav-toggle[aria-expanded="false"] svg {
-            transform: rotate(-90deg);
-        }
-
-        .nav-sub {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-top: -8px;
-        }
-
-        .nav-sub[hidden] {
-            display: none;
-        }
-
-        .nav-sub a {
-            display: block;
-            font-size: 16px;
-            padding: 8px 20px 8px 64px;
-            margin: 0 20px;
-            border-radius: var(--radius);
-            opacity: .85;
-            transition: background-color .2s ease;
-        }
-
-        .nav-empty {
-            font-size: 14px;
-            padding: 4px 20px 4px 64px;
-            opacity: .6;
-        }
-
-        .scrim {
-            display: none;
-        }
-
-        /* ===== Topbar ===== */
-        .main-wrapper {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg);
-            min-width: 0;
-        }
-
-        .topbar {
-            height: 80px;
-            background-color: var(--topbar);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            flex-shrink: 0;
-            box-shadow: 0 1px 0 var(--card-border);
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .menu-btn {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            background: transparent;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .brand-logo {
-            height: 52px;
-            width: auto;
-            display: block;
-            mix-blend-mode: multiply;
-        }
-
-        .topbar-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .search-bar {
-            background-color: var(--bg);
-            border: 1px solid var(--card-border);
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            padding: 5px 20px;
-            width: 350px;
-            height: 40px;
-            transition: box-shadow .2s ease;
-        }
-
-        .search-bar:focus-within {
-            box-shadow: 0 0 0 3px var(--indigo);
-        }
-
-        .search-bar input {
-            border: none;
-            outline: none;
-            background: transparent;
-            flex-grow: 1;
-            min-width: 0;
-        }
-
-        .search-icon {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--text-soft);
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            background-color: var(--indigo);
-            color: #fdfaf6;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            flex-shrink: 0;
-        }
-
-        /* ===== Contenido ===== */
-        .content {
-            padding: 40px;
-            overflow-y: auto;
-            flex-grow: 1;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) transparent;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 8px;
-        }
-
-        .section-title {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 28px;
-            font-weight: 400;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .round-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 1px solid var(--card-border);
-            background-color: var(--card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color .2s ease, border-color .2s ease;
-        }
-
-        .round-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .round-btn:hover,
-        .round-btn.active {
-            background-color: var(--gold);
-            border-color: var(--gold);
-        }
+        /* ===== Estilos propios de esta pantalla (el resto está en shared.css) ===== */
 
         .hint {
-            color: var(--text-soft);
-            min-height: 24px;
             margin-bottom: 24px;
         }
 
@@ -393,7 +48,7 @@
             transition: box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
         }
 
-        /* Hover tipo selec*/
+        /* Hover tipo selección */
         .insumo-row:hover {
             background-color: var(--card-hover);
             border-color: var(--gold);
@@ -405,30 +60,13 @@
             overflow-wrap: anywhere;
         }
 
+        .insumo-name .badge {
+            margin-left: 12px;
+        }
+
         .insumo-unidad,
         .insumo-stock {
             color: var(--text-soft);
-        }
-
-        .edit-btn {
-            width: 36px;
-            height: 36px;
-            border: none;
-            border-radius: 50%;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color .2s ease;
-        }
-
-        .edit-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .edit-btn:hover {
-            background-color: var(--gold);
         }
 
         /* ===== Modo baja ===== */
@@ -441,180 +79,17 @@
             cursor: pointer;
         }
 
-        .is-baja {
+        .insumo-row.is-baja {
             opacity: .6;
             background-color: #cdc7b6;
             border-color: #b8b19c;
         }
 
-        .badge {
-            display: inline-block;
-            margin-left: 12px;
-            padding: 2px 12px;
-            border-radius: 30px;
-            background-color: var(--sidebar);
-            color: var(--sidebar-text);
-            font-size: 13px;
-            font-weight: 500;
-        }
-
         .empty {
-            color: var(--text-soft);
             padding: 0 20px;
         }
 
-        /* ===== Ventanas y avisos ===== */
-        dialog {
-            margin: auto;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            padding: 32px;
-            width: min(440px, 90vw);
-            background-color: var(--bg);
-            color: var(--text);
-            box-shadow: 0 8px 32px rgba(45, 43, 30, .25);
-        }
-
-        dialog::backdrop {
-            background-color: rgba(45, 43, 30, .5);
-        }
-
-        dialog h3 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 22px;
-            font-weight: 400;
-            margin-bottom: 16px;
-        }
-
-        .dlg-text {
-            color: var(--text-soft);
-        }
-
-        dialog label {
-            display: block;
-            color: var(--text-soft);
-            margin: 16px 0 8px;
-        }
-
-        dialog input,
-        dialog select {
-            width: 100%;
-            height: 44px;
-            padding: 0 16px;
-            background-color: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-        }
-
-        .field-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .dialog-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn {
-            height: 44px;
-            padding: 0 24px;
-            border-radius: 30px;
-            border: 1px solid var(--card-border);
-            background-color: var(--card);
-            font-weight: 500;
-        }
-
-        .btn-primary {
-            background-color: var(--green);
-            border-color: var(--green);
-            color: #fdfaf6;
-        }
-
-        .btn:hover {
-            filter: brightness(.95);
-        }
-
-        .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 32px;
-            transform: translate(-50%, 24px);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            background-color: var(--sidebar);
-            color: var(--sidebar-text);
-            box-shadow: 0 8px 24px rgba(45, 43, 30, .3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .2s ease, transform .2s ease;
-            z-index: 50;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-            pointer-events: auto;
-        }
-
-        .toast-btn {
-            border: none;
-            background: none;
-            color: var(--gold);
-            font-weight: 500;
-        }
-
-        .toast-btn:hover {
-            text-decoration: underline;
-        }
-
-        /* ===== movil o tablet ===== */
         @media (max-width: 900px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                transform: translateX(-100%);
-                transition: transform .25s ease;
-            }
-
-            .menu-open .sidebar {
-                transform: none;
-            }
-
-            .menu-open .scrim {
-                display: block;
-                position: fixed;
-                inset: 0;
-                background-color: rgba(45, 43, 30, .5);
-                z-index: 10;
-            }
-
-            .menu-btn {
-                display: flex;
-            }
-
-            .topbar,
-            .content {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-
-            .brand-logo {
-                height: 40px;
-            }
-
-            .search-bar {
-                width: 180px;
-            }
-
             .insumo-head,
             .insumo-row {
                 grid-template-columns: 1fr 110px 90px 40px;
@@ -624,92 +99,40 @@
         }
 
         @media (max-width: 560px) {
-            .search-bar {
-                display: none;
-            }
-
-            .badge {
+            .insumo-name .badge {
                 display: block;
                 width: fit-content;
                 margin: 4px 0 0;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-layout">
-        <aside class="sidebar">
-            <h1>Usuario</h1>
-
-            <nav class="nav-menu">
-                <div class="nav-item">Menú</div>
-                <a href="index.html" class="nav-item">Dashboard</a>
-                <div class="nav-row">
-                    <a href="inventarios.html" class="nav-item">Inventarios</a>
-                    <button class="nav-toggle" id="nav-toggle" aria-expanded="true" aria-label="Mostrar u ocultar inventarios">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-                    </button>
-                </div>
-
-                <ul class="nav-sub" id="nav-inventarios"></ul>
-                <a href="productos.html" class="nav-item">Productos</a>
-                <a href="insumos.html" class="nav-item active" aria-current="page">Insumos</a>
-            </nav>
-        </aside>
-        <div class="scrim" id="scrim"></div>
-
-        <div class="main-wrapper">
-            <header class="topbar">
-                <div class="topbar-left">
-                    <button class="menu-btn" id="menu-btn" aria-label="Abrir menú">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-                    </button>
-                    <a href="index.html">
-                        <img class="brand-logo" src="logo.png" alt="Elementos con alquimia">
-                    </a>
-                </div>
-                <div class="topbar-controls">
-                    <div class="search-bar">
-                        <input type="text" id="buscar" aria-label="Buscar insumo" placeholder="Buscar insumo">
-                        <span class="search-icon"></span>
-                    </div>
-                    <div class="user-profile">U</div>
-                </div>
-            </header>
-
-            <main class="content">
-                <div class="page-header">
-                    <h2 class="section-title">Insumos</h2>
-                    <div class="header-actions">
-                        <button class="round-btn" id="btn-agregar" aria-label="Agregar insumo" title="Agregar insumo">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                        </button>
-                        <button class="round-btn" id="btn-baja" aria-label="Dar de baja insumos" aria-pressed="false" title="Dar de baja insumos">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <p class="hint" id="hint"></p>
-
-                <div class="insumos-table" id="tabla" role="table" aria-label="Insumos generales">
-                    <div class="insumo-head" role="row">
-                        <span role="columnheader">Nombre</span>
-                        <span role="columnheader">Unidad</span>
-                        <span role="columnheader">Stock</span>
-                        <span role="columnheader"></span>
-                    </div>
-                    <div id="filas" style="display: contents"></div>
-                </div>
-            </main>
+    <main class="content">
+        <div class="page-header">
+            <h2 class="section-title">Insumos</h2>
+            <div class="header-actions">
+                <button class="round-btn" id="btn-agregar" aria-label="Agregar insumo" title="Agregar insumo">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <button class="round-btn" id="btn-baja" aria-label="Dar de baja insumos" aria-pressed="false" title="Dar de baja insumos">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                </button>
+            </div>
         </div>
-    </div>
+        <p class="hint" id="hint"></p>
+
+        <div class="insumos-table" id="tabla" role="table" aria-label="Insumos generales">
+            <div class="insumo-head" role="row">
+                <span role="columnheader">Nombre</span>
+                <span role="columnheader">Unidad</span>
+                <span role="columnheader">Stock</span>
+                <span role="columnheader"></span>
+            </div>
+            <div id="filas" style="display: contents"></div>
+        </div>
+    </main>
 
     <dialog id="dlg">
         <form method="dialog" id="form-insumo">
@@ -733,18 +156,12 @@
         </form>
     </dialog>
 
+    <script src="shared.js"></script>
     <script>
-        // ===== Datos compartidos (antes shared.js) =====
-        // Todo se guarda en localStorage, reemplazar por la bd
-        // "baja: true" = dado de baja (no se elimina, se puede restablecer).
-        const KEY_INV = 'eca_inventarios_v1';   // misma clave que usan las demás pantallas
-        const KEY_INS = 'eca_insumos_v1';       // insumos generales
+        montarLayout({ activo: 'insumos', buscar: 'Buscar insumo' });
 
-        const SEED_INV = [
-            { id: 1, nombre: 'Inventario 1', descripcion: 'Materias primas y esencias para elaboración.', productos: 24, baja: false },
-            { id: 2, nombre: 'Inventario 2', descripcion: 'Productos terminados listos para venta.', productos: 18, baja: false },
-            { id: 3, nombre: 'Inventario 3', descripcion: 'Envases, etiquetas y material de empaque.', productos: 31, baja: false }
-        ];
+        // ===== Pantalla de insumos generales =====
+        const KEY_INS = 'eca_insumos_v1';
         const SEED_INS = [
             { id: 1, nombre: 'Insumo 1', unidad: 'Kilo', stock: 2, baja: false },
             { id: 2, nombre: 'Insumo 2', unidad: 'Gramo', stock: 4, baja: false },
@@ -752,85 +169,12 @@
             { id: 4, nombre: 'Insumo 4', unidad: 'Kilo', stock: 2, baja: false },
             { id: 5, nombre: 'Insumo 5', unidad: 'Gramo', stock: 4, baja: false }
         ];
-
-        function cargar(key, seed) {
-            try {
-                const s = localStorage.getItem(key);
-                if (s) return JSON.parse(s);
-            } catch (e) {}
-            return JSON.parse(JSON.stringify(seed));
-        }
-
-        const inventarios = cargar(KEY_INV, SEED_INV);   // solo lectura aquí (para el menú lateral)
         let insumos = cargar(KEY_INS, SEED_INS);
 
-        function guardar() {
+        function guardarInsumos() {
             try { localStorage.setItem(KEY_INS, JSON.stringify(insumos)); } catch (e) {}
         }
 
-        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-        // ===== Sidebar: inventarios activos =====
-        function renderSidebar() {
-            const ul = document.getElementById('nav-inventarios');
-            const activos = inventarios.filter(i => !i.baja);
-            ul.innerHTML = activos.length
-                ? activos.map(i => `<li><a href="inventario.html?id=${i.id}">${esc(i.nombre)}</a></li>`).join('')
-                : '<li class="nav-empty">Sin inventarios activos</li>';
-        }
-
-        // ===== Aviso con "Deshacer" =====
-        function toast(msg, onUndo) {
-            let t = document.getElementById('toast');
-            if (!t) {
-                t = document.createElement('div');
-                t.id = 'toast';
-                t.className = 'toast';
-                t.setAttribute('role', 'status');
-                document.body.appendChild(t);
-            }
-            t.innerHTML = '<span></span><button class="toast-btn">Deshacer</button>';
-            t.firstChild.textContent = msg;
-            t.querySelector('button').onclick = () => { onUndo(); t.classList.remove('show'); };
-            t.classList.add('show');
-            clearTimeout(t._t);
-            t._t = setTimeout(() => t.classList.remove('show'), 6000);
-        }
-
-        // ===== Ventana de confirmación =====
-        function confirmar(titulo, texto, okLabel, onOk) {
-            let d = document.getElementById('dlg-confirm');
-            if (!d) {
-                d = document.createElement('dialog');
-                d.id = 'dlg-confirm';
-                d.innerHTML = '<h3></h3><p class="dlg-text"></p><div class="dialog-actions"><button class="btn" data-no>Cancelar</button><button class="btn btn-primary" data-ok></button></div>';
-                document.body.appendChild(d);
-                d.querySelector('[data-no]').onclick = () => d.close();
-            }
-            d.querySelector('h3').textContent = titulo;
-            d.querySelector('.dlg-text').textContent = texto;
-            const ok = d.querySelector('[data-ok]');
-            ok.textContent = okLabel;
-            ok.onclick = () => { d.close(); onOk(); };
-            d.showModal();
-        }
-
-        // ===== Menú: submenú plegable y menú móvil =====
-        document.getElementById('nav-toggle').addEventListener('click', e => {
-            const ul = document.getElementById('nav-inventarios');
-            ul.hidden = !ul.hidden;
-            e.currentTarget.setAttribute('aria-expanded', !ul.hidden);
-        });
-
-        const alternarMenu = () => document.body.classList.toggle('menu-open');
-        document.getElementById('menu-btn').addEventListener('click', alternarMenu);
-        document.getElementById('scrim').addEventListener('click', alternarMenu);
-
-        renderSidebar();
-    </script>
-
-    <script>
-        // ===== Pantalla de insumos generales =====
         const UNIDADES = ['Kilo', 'Gramo', 'Litro', 'Mililitro', 'Pieza'];   // agrega las que necesites
         let modoBaja = false;
         let filtro = '';
@@ -881,7 +225,7 @@
         }
 
         function actualizar() {
-            guardar();
+            guardarInsumos();
             render();
         }
 

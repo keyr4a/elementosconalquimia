@@ -6,47 +6,10 @@
     <title>Inventarios - Elementos con alquimia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
 
     <style>
-        /* ===== Paleta: Laboratorio cálido ===== */
-        :root {
-            --bg: #fdfaf6;
-            --sidebar: #2d2b1e;
-            --sidebar-text: #f5f3ed;
-            --topbar: #f5f3ed;
-            --text: #2d2b1e;
-            --text-soft: #5a4634;
-            --card: #f5f3ed;
-            --card-hover: #f3ead6;
-            --card-border: #e6e1d5;
-            --gold: #d8b26e;
-            --green: #2a806a;
-            --indigo: #2d2a7b;
-            --radius: 14px;
-            --shadow: 0 2px 8px rgba(45, 43, 30, .10);
-        }
-
-        /* ===== Base ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: var(--text);
-            background-color: var(--bg);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+        /* ===== Estilos propios de esta pantalla (el resto está en shared.css) ===== */
 
         button,
         select,
@@ -61,281 +24,14 @@
             cursor: pointer;
         }
 
-        :focus-visible {
-            outline: 3px solid var(--indigo);
-            outline-offset: 2px;
-        }
-
-        .icon {
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ===== Layout ===== */
-        .app-layout {
-            display: flex;
-            height: 100vh;
-            width: 100%;
-        }
-
-        /* ===== Sidebar ===== */
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            padding: 40px 0;
-            flex-shrink: 0;
-            z-index: 20;
-        }
-
-        .sidebar h1 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 28px;
-            font-weight: 400;
-            padding: 0 40px;
-            margin-bottom: 48px;
-        }
-
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-            min-height: 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) transparent;
-        }
-
-        .nav-item {
-            font-size: 18px;
-            padding: 16px 40px;
-            margin: 0 20px;
-            border-radius: var(--radius);
-            transition: background-color .2s ease, color .2s ease;
-        }
-
-        .nav-menu div.nav-item {
-            font-size: 14px;
-            opacity: .7;
-            padding-bottom: 0;
-        }
-
-        .nav-menu a.nav-item:hover,
-        .nav-sub a:hover {
-            background-color: rgba(255, 255, 255, .12);
-        }
-
-        .nav-item.active,
-        .nav-menu a.nav-item.active:hover {
-            background-color: var(--gold);
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .nav-row {
-            position: relative;
-        }
-
-        .nav-row .nav-item {
-            display: block;
-        }
-
-        .nav-toggle {
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 50%;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-toggle svg {
-            width: 18px;
-            height: 18px;
-            transition: transform .2s ease;
-        }
-
-        .nav-toggle[aria-expanded="false"] svg {
-            transform: rotate(-90deg);
-        }
-
         .nav-item.active + .nav-toggle {
-            color: var(--text);
-        }
-
-        .nav-sub {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-top: -8px;
-        }
-
-        .nav-sub[hidden] {
-            display: none;
-        }
-
-        .nav-sub a {
-            display: block;
-            font-size: 16px;
-            padding: 8px 20px 8px 64px;
-            margin: 0 20px;
-            border-radius: var(--radius);
-            opacity: .85;
-            transition: background-color .2s ease;
-        }
-
-        .nav-empty {
-            font-size: 14px;
-            padding: 4px 20px 4px 64px;
-            opacity: .6;
-        }
-
-        .scrim {
-            display: none;
-        }
-
-        /* ===== Topbar ===== */
-        .main-wrapper {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg);
-            min-width: 0;
-        }
-
-        .topbar {
-            height: 80px;
-            background-color: var(--topbar);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            flex-shrink: 0;
-            box-shadow: 0 1px 0 var(--card-border);
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .menu-btn {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            background: transparent;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .brand-logo {
-            height: 52px;
-            width: auto;
-            display: block;
-            mix-blend-mode: multiply; 
-        }
-
-        .topbar-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .search-bar {
-            background-color: var(--bg);
-            border: 1px solid var(--card-border);
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            padding: 5px 20px;
-            width: 350px;
-            height: 40px;
-            transition: box-shadow .2s ease;
-        }
-
-        .search-bar:focus-within {
-            box-shadow: 0 0 0 3px var(--indigo);
-        }
-
-        .search-bar input {
-            border: none;
-            outline: none;
-            background: transparent;
-            flex-grow: 1;
-            min-width: 0;
-        }
-
-        .search-icon {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--text-soft);
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-            /* Este círculo es temporal hasta que pongas el icono real de la lupa */
-        }
-
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            background-color: var(--indigo);
-            color: #fdfaf6;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            flex-shrink: 0;
-        }
-
-        /* ===== Contenido ===== */
-        .content {
-            padding: 40px;
-            overflow-y: auto;
-            flex-grow: 1;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) transparent;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 8px;
+            color: var(--active-text);
         }
 
         .section-title {
             font-family: 'Fraunces', Georgia, serif;
             font-size: 28px;
             font-weight: 400;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         .select {
@@ -346,41 +42,10 @@
             background-color: var(--card);
         }
 
-        .round-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 1px solid var(--card-border);
-            background-color: var(--card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color .2s ease, border-color .2s ease;
-        }
-
-        .round-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .round-btn:hover,
-        .round-btn.active {
-            background-color: var(--gold);
-            border-color: var(--gold);
-        }
-
         .hint {
             color: var(--text-soft);
             min-height: 24px;
             margin-bottom: 32px;
-        }
-
-        /* ===== Cards de inventarios ===== */
-        .inventories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 32px;
-            max-width: 900px;
         }
 
         .inventory-item {
@@ -393,64 +58,12 @@
             outline: none;
         }
 
-        .inventory-card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            padding: 20px;
-            transition: box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
-        }
-
         /* Hover tipo seleccion */
         .inventory-item:hover .inventory-card {
             background-color: var(--card-hover);
             border-color: var(--gold);
             box-shadow: 0 0 0 3px var(--gold);
             color: var(--gold);
-        }
-
-        .inventory-item:focus-visible .inventory-card {
-            box-shadow: 0 0 0 3px var(--indigo);
-        }
-
-        .card-number {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 64px;
-            font-weight: 600;
-            line-height: 1;
-        }
-
-        .card-label {
-            color: var(--text-soft);
-        }
-
-        .inventory-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .inventory-name {
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        .inventory-desc {
-            color: var(--text-soft);
-            font-size: 15px;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         /* ===== Modo baja ===== */
@@ -479,8 +92,8 @@
             left: 14px;
             padding: 2px 12px;
             border-radius: 30px;
-            background-color: var(--sidebar);
-            color: var(--sidebar-text);
+            background-color: var(--dark);
+            color: #f5f3ed;
             font-size: 13px;
             font-weight: 500;
         }
@@ -513,64 +126,19 @@
             height: 40px;
         }
 
-        .baja-mode .new-card {
-            opacity: .35;
-            pointer-events: none;
-        }
-
         .empty {
             grid-column: 1 / -1;
             color: var(--text-soft);
-        }
-
-        /* ===== Ventanas y avisos ===== */
-        dialog {
-            margin: auto;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            padding: 32px;
-            width: min(440px, 90vw);
-            background-color: var(--bg);
-            color: var(--text);
-            box-shadow: 0 8px 32px rgba(45, 43, 30, .25);
-        }
-
-        dialog::backdrop {
-            background-color: rgba(45, 43, 30, .5);
-        }
-
-        dialog h3 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 22px;
-            font-weight: 400;
-            margin-bottom: 16px;
-        }
-
-        .dlg-text {
-            color: var(--text-soft);
-        }
-
-        dialog label {
-            display: block;
-            color: var(--text-soft);
-            margin: 16px 0 8px;
         }
 
         dialog input,
         dialog textarea {
             width: 100%;
             padding: 10px 16px;
-            background-color: var(--card);
+            background-color: var(--bg);
             border: 1px solid var(--card-border);
             border-radius: var(--radius);
             resize: none;
-        }
-
-        .dialog-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
         }
 
         .btn {
@@ -582,178 +150,37 @@
             font-weight: 500;
         }
 
-        .btn-primary {
-            background-color: var(--green);
-            border-color: var(--green);
-            color: #fdfaf6;
-        }
-
-        .btn:hover {
-            filter: brightness(.95);
-        }
-
-        .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 32px;
-            transform: translate(-50%, 24px);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            background-color: var(--sidebar);
-            color: var(--sidebar-text);
-            box-shadow: 0 8px 24px rgba(45, 43, 30, .3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .2s ease, transform .2s ease;
-            z-index: 50;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-            pointer-events: auto;
-        }
-
-        .toast-btn {
-            border: none;
-            background: none;
-            color: var(--gold);
-            font-weight: 500;
-        }
-
-        .toast-btn:hover {
-            text-decoration: underline;
-        }
-
         /* ===== movil o tablet ===== */
         @media (max-width: 900px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                transform: translateX(-100%);
-                transition: transform .25s ease;
-            }
-
-            .menu-open .sidebar {
-                transform: none;
-            }
-
-            .menu-open .scrim {
-                display: block;
-                position: fixed;
-                inset: 0;
-                background-color: rgba(45, 43, 30, .5);
-                z-index: 10;
-            }
-
-            .menu-btn {
-                display: flex;
-            }
-
-            .topbar,
-            .content {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-
-            .brand-logo {
-                height: 40px;
-            }
-
-            .search-bar {
-                width: 180px;
-            }
-
             .page-header {
                 flex-wrap: wrap;
-            }
-        }
-
-        @media (max-width: 560px) {
-            .search-bar {
-                display: none;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-layout">
-        <aside class="sidebar">
-            <h1>Usuario</h1>
-
-            <nav class="nav-menu">
-                <div class="nav-item">Menú</div>
-                <a href="index.html" class="nav-item">Dashboard</a>
-                <div class="nav-row">
-                    <a href="inventarios.html" class="nav-item active" aria-current="page">Inventarios</a>
-                    <button class="nav-toggle" id="nav-toggle" aria-expanded="true" aria-label="Mostrar u ocultar inventarios">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-                    </button>
-                </div>
-
-                <ul class="nav-sub" id="nav-inventarios"></ul>
-                <a href="productos.html" class="nav-item">Productos</a>
-                <a href="insumos.html" class="nav-item">Insumos</a>
-            </nav>
-
-        </aside>
-        <div class="scrim" id="scrim"></div>
-
-        <div class="main-wrapper">
-            <header class="topbar">
-                <div class="topbar-left">
-                    <button class="menu-btn" id="menu-btn" aria-label="Abrir menú">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-                    </button>
-                    <a href="index.html">
-                        <img class="brand-logo" src="logo.png" alt="Elementos con alquimia">
-                    </a>
-                </div>
-                <div class="topbar-controls">
-                    <div class="search-bar">
-                        <input type="text" id="buscar" aria-label="Buscar inventario" placeholder="Buscar inventario">
-                        <span class="search-icon"></span>
-                    </div>
-                    <div class="user-profile">U</div>
-                </div>
-            </header>
-
-            <main class="content">
-
-                <div class="page-header">
-                    <h2 class="section-title">Inventarios</h2>
-                    <div class="header-actions">
-                        <select class="select" id="orden" aria-label="Ordenar inventarios">
-                            <option value="nombre">Nombre</option>
-                            <option value="productos">Más productos</option>
-                            <option value="recientes">Más recientes</option>
-                        </select>
-                        <button class="round-btn" id="btn-agregar" aria-label="Agregar inventario" title="Agregar inventario">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                        </button>
-                        <button class="round-btn" id="btn-baja" aria-label="Dar de baja inventarios" aria-pressed="false" title="Dar de baja inventarios">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <p class="hint" id="hint"></p>
-
-                <div class="inventories-grid" id="grid"></div>
-            </main>
+    <main class="content">
+        <div class="page-header">
+            <h2 class="section-title">Inventarios</h2>
+            <div class="header-actions">
+                <select class="select" id="orden" aria-label="Ordenar inventarios">
+                    <option value="nombre">Nombre</option>
+                    <option value="productos">Más productos</option>
+                    <option value="recientes">Más recientes</option>
+                </select>
+                <button class="round-btn" id="btn-agregar" aria-label="Agregar inventario" title="Agregar inventario">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <button class="round-btn" id="btn-baja" aria-label="Dar de baja inventarios" aria-pressed="false" title="Dar de baja inventarios">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                </button>
+            </div>
         </div>
-    </div>
+        <p class="hint" id="hint"></p>
+
+        <div class="inventories-grid" id="grid"></div>
+    </main>
 
     <dialog id="dlg">
         <form method="dialog" id="form-nuevo">
@@ -769,109 +196,10 @@
         </form>
     </dialog>
 
+    <script src="shared.js"></script>
     <script>
-        // ===== Datos compartidos entre pantallas =====
-        // datos de ejemplo se guardan en localStorage , reemplazar con la bd
-        // "baja: true" = inventario dado de baja (no se elimina, se puede restablecer)
-        const KEY = 'eca_inventarios_v1';
-        const SEED = [
-          { id: 1, nombre: 'Almacen principal', descripcion: 'Comentario de ejemplo', productos: 24, baja: false },
-            { id: 2, nombre: 'Colectivo', descripcion: 'Av. Sonora y calle 30', productos: 18, baja: false },
-            { id: 3, nombre: 'Inventario 3', descripcion: 'Otra direccion de ejemplo', productos: 31, baja: false }
-        ];
+        montarLayout({ activo: 'inventarios', buscar: 'Buscar inventario' });
 
-        function cargar() {
-            try {
-                const s = localStorage.getItem(KEY);
-                if (s) return JSON.parse(s);
-            } catch (e) {}
-            return JSON.parse(JSON.stringify(SEED));
-        }
-
-        let inventarios = cargar();
-
-        function guardar() {
-            try { localStorage.setItem(KEY, JSON.stringify(inventarios)); } catch (e) {}
-        }
-
-        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-        // ===== Sidebar: inventarios activos =====
-        function renderSidebar() {
-            const ul = document.getElementById('nav-inventarios');
-            const activos = inventarios.filter(i => !i.baja);
-            ul.innerHTML = activos.length
-                ? activos.map(i => `<li><a href="inventario.html?id=${i.id}">${esc(i.nombre)}</a></li>`).join('')
-                : '<li class="nav-empty">Sin inventarios activos</li>';
-        }
-
-        // ===== Card de inventario (tag: 'a' en el dashboard, 'button' en inventarios) =====
-        function cardHTML(i, tag) {
-            const href = tag === 'a' ? ` href="inventario.html?id=${i.id}"` : '';
-            return `
-                <${tag} class="inventory-item${i.baja ? ' is-baja' : ''}" data-id="${i.id}"${href}>
-                    <div class="inventory-card">
-                        ${i.baja ? '<span class="badge">De baja</span>' : ''}
-                        <div class="card-number">${i.productos}</div>
-                        <div class="card-label">productos</div>
-                    </div>
-                    <div class="inventory-text">
-                        <span class="inventory-name">${esc(i.nombre)}</span>
-                        <span class="inventory-desc">${esc(i.descripcion || '')}</span>
-                    </div>
-                </${tag}>`;
-        }
-
-        // ===== Aviso con "Deshacer" =====
-        function toast(msg, onUndo) {
-            let t = document.getElementById('toast');
-            if (!t) {
-                t = document.createElement('div');
-                t.id = 'toast';
-                t.className = 'toast';
-                t.setAttribute('role', 'status');
-                document.body.appendChild(t);
-            }
-            t.innerHTML = '<span></span><button class="toast-btn">Deshacer</button>';
-            t.firstChild.textContent = msg;
-            t.querySelector('button').onclick = () => { onUndo(); t.classList.remove('show'); };
-            t.classList.add('show');
-            clearTimeout(t._t);
-            t._t = setTimeout(() => t.classList.remove('show'), 6000);
-        }
-
-        // ===== Ventana de confirmación =====
-        function confirmar(titulo, texto, okLabel, onOk) {
-            let d = document.getElementById('dlg-confirm');
-            if (!d) {
-                d = document.createElement('dialog');
-                d.id = 'dlg-confirm';
-                d.innerHTML = '<h3></h3><p class="dlg-text"></p><div class="dialog-actions"><button class="btn" data-no>Cancelar</button><button class="btn btn-primary" data-ok></button></div>';
-                document.body.appendChild(d);
-                d.querySelector('[data-no]').onclick = () => d.close();
-            }
-            d.querySelector('h3').textContent = titulo;
-            d.querySelector('.dlg-text').textContent = texto;
-            const ok = d.querySelector('[data-ok]');
-            ok.textContent = okLabel;
-            ok.onclick = () => { d.close(); onOk(); };
-            d.showModal();
-        }
-
-        // ===== Menú: submenú plegable y menú móvil =====
-        document.getElementById('nav-toggle').addEventListener('click', e => {
-            const ul = document.getElementById('nav-inventarios');
-            ul.hidden = !ul.hidden;
-            e.currentTarget.setAttribute('aria-expanded', !ul.hidden);
-        });
-
-        const alternarMenu = () => document.body.classList.toggle('menu-open');
-        document.getElementById('menu-btn').addEventListener('click', alternarMenu);
-        document.getElementById('scrim').addEventListener('click', alternarMenu);
-
-        renderSidebar();
-    </script>
-    <script>
         let modoBaja = false;
         let filtro = '';
         let orden = 'nombre';
@@ -915,7 +243,7 @@
         }
 
         function actualizar() {
-            guardar();
+            guardar('inventarios');
             renderSidebar();
             render();
         }

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insumos del producto - Elementos con alquimia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared.css">
+
+    <style>
+        /* ===== Estilos propios de esta pantalla (el resto está en shared.css) ===== */
+
+        .section-title {
+            margin-bottom: 8px;
+        }
+
+        .detalle {
+            display: grid;
+            grid-template-columns: 200px minmax(0, 1fr);
+            gap: 40px;
+            max-width: 1100px;
+            align-items: start;
+        }
+
+        /* ===== Columna del producto ===== */
+        .detalle-prod {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detalle-prod .product-img {
+            margin-bottom: 12px;
+        }
+
+        .detalle-nombre {
+            font-size: 18px;
+            font-weight: 500;
+            overflow-wrap: anywhere;
+        }
+
+        .detalle-prod .product-stock {
+            margin-top: 4px;
+        }
+
+        /* ===== Tabla de insumos necesarios ===== */
+        .receta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .receta-head,
+        .receta-row {
+            display: grid;
+            grid-template-columns: 1fr 140px 120px 48px;
+            align-items: center;
+            gap: 16px;
+            padding: 0 20px;
+        }
+
+        .receta-head {
+            color: var(--text-soft);
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 18px;
+            padding-bottom: 4px;
+        }
+
+        .receta-row {
+            min-height: 64px;
+            background-color: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+        }
+
+        /* Hover tipo selección */
+        .receta-row:hover {
+            background-color: var(--card-hover);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold);
+        }
+
+        .receta-name {
+            font-weight: 500;
+            overflow-wrap: anywhere;
+        }
+
+        .receta-name .badge {
+            margin-left: 12px;
+        }
+
+        .receta-unidad,
+        .receta-cant {
+            color: var(--text-soft);
+        }
+
+        .receta-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        /* ===== Modo baja ===== */
+        .baja-mode .receta-row:not(.is-baja) {
+            border-style: dashed;
+            border-color: var(--text-soft);
+        }
+
+        .baja-mode .receta-row {
+            cursor: pointer;
+        }
+
+        .receta-row.is-baja {
+            opacity: .6;
+            background-color: #cdc7b6;
+            border-color: #b8b19c;
+        }
+
+        .receta .empty {
+            padding: 0 20px;
+        }
+
+        @media (max-width: 900px) {
+            .detalle {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .detalle-prod {
+                max-width: 200px;
+            }
+
+            .receta-head,
+            .receta-row {
+                grid-template-columns: 1fr 90px 80px 40px;
+                gap: 8px;
+                padding: 0 12px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .receta-name .badge {
+                display: block;
+                width: fit-content;
+                margin: 4px 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="content">
+        <h2 class="section-title">Productos</h2>
+        <p class="hint" id="hint"></p>
+
+        <p class="empty" id="no-encontrado" hidden>
+            No se encontró este producto. <a href="productos.html" class="link">Ir a Productos</a>
+        </p>
+
+        <div class="detalle" id="detalle">
+            <aside class="detalle-prod">
+                <div class="product-img" id="p-img"></div>
+                <span class="detalle-nombre" id="p-nombre"></span>
+                <span class="product-price" id="p-precio"></span>
+                <span class="product-stock" id="p-stock"></span>
+            </aside>
+
+            <section class="receta" id="receta">
+                <div class="receta-head" aria-hidden="true">
+                    <span>Insumos necesarios</span>
+                    <span>Unidad</span>
+                    <span>Cantidad</span>
+                    <span></span>
+                </div>
+                <div id="filas" style="display: contents"></div>
+
+                <div class="receta-actions">
+                    <button type="button" class="btn" id="regresar">Regresar</button>
+                    <div class="header-actions">
+                        <button class="round-btn" id="btn-agregar" aria-label="Agregar insumo" title="Agregar insumo">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                        <button class="round-btn" id="btn-baja" aria-label="Dar de baja insumos" aria-pressed="false" title="Dar de baja insumos">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <dialog id="dlg">
+        <form method="dialog" id="form-receta">
+            <h3 id="dlg-titulo">Agregar insumo</h3>
+            <div class="field-row">
+                <div>
+                    <label for="insumo">Insumo</label>
+                    <select id="insumo" required></select>
+                </div>
+                <div>
+                    <label for="cantidad">Cantidad</label>
+                    <input id="cantidad" type="number" min="0.01" step="any" required>
+                </div>
+            </div>
+            <p class="dlg-text" id="dlg-aviso" hidden>No hay más insumos disponibles. Agrégalos primero en la pantalla Insumos.</p>
+            <div class="dialog-actions">
+                <button type="button" class="btn" id="cancelar">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="dlg-guardar">Agregar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="shared.js"></script>
+    <script>
+        // El producto se abre con producto-insumos.html?id=1
+        const params = new URLSearchParams(location.search);
+        const prodId = Number(params.get('id') ?? params.get('producto'));
+
+        montarLayout({ activo: 'productos', buscar: 'Buscar insumo' });
+
+        const productos = cargar(LS_PRODUCTOS, SEMILLA_PRODUCTOS);
+        const insumos = cargar(LS_INSUMOS, SEMILLA_INSUMOS);
+        const recetas = cargar(LS_RECETAS, SEMILLA_RECETAS);
+        const producto = productos.find(p => p.id === prodId);
+
+        if (!producto) {
+            document.getElementById('detalle').hidden = true;
+            document.getElementById('no-encontrado').hidden = false;
+        } else {
+            iniciar();
+        }
+
+        function iniciar() {
+            if (!recetas[prodId]) recetas[prodId] = [];
+            const lineas = recetas[prodId];
+
+            const STOCK_BAJO = 5;
+            let modoBaja = false;
+            let filtro = '';
+            let editandoId = null;      // null = agregando un insumo nuevo a la receta
+
+            const filas = document.getElementById('filas');
+            const receta = document.getElementById('receta');
+            const hint = document.getElementById('hint');
+            const btnBaja = document.getElementById('btn-baja');
+            const dlg = document.getElementById('dlg');
+            const selInsumo = document.getElementById('insumo');
+            const inputCant = document.getElementById('cantidad');
+            const aviso = document.getElementById('dlg-aviso');
+            const btnGuardar = document.getElementById('dlg-guardar');
+
+            const iconoProducto = '<svg class="icon" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 10a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/><path d="M7.5 15h9"/></svg>';
+            const iconoEditar = '<svg class="icon" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>';
+            const formatoNum = n => Number(n).toLocaleString('es-MX', { maximumFractionDigits: 2 });
+            const formatoPrecio = p => '$' + Number(p).toLocaleString('es-MX', {
+                minimumFractionDigits: p % 1 === 0 ? 0 : 2,
+                maximumFractionDigits: 2
+            }) + ' MXN';
+            const insumoPorId = id => insumos.find(i => i.id === id);
+
+            // ----- Datos del producto -----
+            document.title = producto.nombre + ' · Insumos - Elementos con alquimia';
+            document.getElementById('p-img').innerHTML = (producto.baja ? '<span class="badge">De baja</span>' : '') + iconoProducto;
+            document.getElementById('p-nombre').textContent = producto.nombre;
+            document.getElementById('p-precio').textContent = formatoPrecio(producto.precio);
+            const bajoStock = producto.stock <= STOCK_BAJO;
+            const pStock = document.getElementById('p-stock');
+            pStock.textContent = 'Stock: ' + producto.stock + (bajoStock ? ' (bajo)' : '');
+            pStock.classList.toggle('low', bajoStock);
+
+            // ----- Tabla -----
+            function filaHTML(l) {
+                const ins = insumoPorId(l.insumoId);
+                return `
+                    <div class="receta-row${l.baja ? ' is-baja' : ''}" data-id="${l.id}">
+                        <span class="receta-name">${esc(ins ? ins.nombre : 'Insumo eliminado')}${l.baja ? '<span class="badge">De baja</span>' : ''}</span>
+                        <span class="receta-unidad">${esc(ins ? ins.unidad : '—')}</span>
+                        <span class="receta-cant">${formatoNum(l.cantidad)}</span>
+                        <span><button class="edit-btn" aria-label="Editar ${esc(ins ? ins.nombre : 'insumo')}" title="Editar">${iconoEditar}</button></span>
+                    </div>`;
+            }
+
+            const nombreDe = l => { const i = insumoPorId(l.insumoId); return i ? i.nombre : ''; };
+
+            function render() {
+                receta.classList.toggle('baja-mode', modoBaja);
+                btnBaja.classList.toggle('active', modoBaja);
+                btnBaja.setAttribute('aria-pressed', modoBaja);
+                hint.textContent = modoBaja
+                    ? 'Modo baja: toca un insumo para darlo de baja. Si ya está de baja, tócalo para restablecerlo.'
+                    : '';
+
+                const q = filtro.toLowerCase();
+                let lista = lineas.filter(l => nombreDe(l).toLowerCase().includes(q));
+                lista.sort((a, b) => nombreDe(a).localeCompare(nombreDe(b), 'es', { numeric: true }));
+                lista = [...lista.filter(l => !l.baja), ...lista.filter(l => l.baja)]; // los de baja al final
+
+                if (!lista.length) {
+                    filas.innerHTML = filtro
+                        ? `<p class="empty">Ningún insumo coincide con "${esc(filtro)}".</p>`
+                        : '<p class="empty">Este producto aún no tiene insumos. Toca + para agregar el primero.</p>';
+                } else {
+                    filas.innerHTML = lista.map(filaHTML).join('');
+                }
+            }
+
+            function actualizar() {
+                guardarLS(LS_RECETAS, recetas);
+                render();
+            }
+
+            // Sin línea = agregar insumo; con línea = editarla
+            function abrirDialogo(l) {
+                editandoId = l ? l.id : null;
+                document.getElementById('form-receta').reset();
+                document.getElementById('dlg-titulo').textContent = l ? 'Editar insumo' : 'Agregar insumo';
+                btnGuardar.textContent = l ? 'Guardar cambios' : 'Agregar';
+
+                // Solo insumos activos que aún no están en la receta (más el que se está editando)
+                const usados = new Set(lineas.filter(x => !l || x.id !== l.id).map(x => x.insumoId));
+                const disponibles = insumos.filter(i => (!i.baja && !usados.has(i.id)) || (l && i.id === l.insumoId));
+                selInsumo.innerHTML = disponibles
+                    .map(i => `<option value="${i.id}">${esc(i.nombre)} (${esc(i.unidad)})</option>`)
+                    .join('');
+
+                aviso.hidden = disponibles.length > 0;
+                btnGuardar.disabled = disponibles.length === 0;
+
+                if (l) {
+                    selInsumo.value = l.insumoId;
+                    inputCant.value = l.cantidad;
+                }
+                dlg.showModal();
+                (disponibles.length ? selInsumo : document.getElementById('cancelar')).focus();
+            }
+
+            function darDeBaja(l) {
+                l.baja = true;
+                actualizar();
+                toast('"' + (nombreDe(l) || 'Insumo') + '" se dio de baja.', () => { l.baja = false; actualizar(); });
+            }
+
+            function restablecer(l) {
+                confirmar(
+                    '¿Restablecer este insumo?',
+                    '"' + (nombreDe(l) || 'Insumo') + '" volverá a estar activo en este producto.',
+                    'Restablecer',
+                    () => { l.baja = false; actualizar(); }
+                );
+            }
+
+            filas.addEventListener('click', e => {
+                const fila = e.target.closest('.receta-row');
+                if (!fila) return;
+                const l = lineas.find(x => x.id === Number(fila.dataset.id));
+
+                // En modo baja (o si ya está de baja) toda la fila responde
+                if (l.baja || modoBaja) return l.baja ? restablecer(l) : darDeBaja(l);
+                if (e.target.closest('.edit-btn')) abrirDialogo(l);
+            });
+
+            document.getElementById('btn-agregar').addEventListener('click', () => abrirDialogo());
+            btnBaja.addEventListener('click', () => { modoBaja = !modoBaja; render(); });
+            document.getElementById('cancelar').addEventListener('click', () => dlg.close());
+            document.getElementById('buscar').addEventListener('input', e => { filtro = e.target.value.trim(); render(); });
+
+            document.getElementById('regresar').addEventListener('click', () => {
+                if (history.length > 1) history.back();
+                else location.href = 'productos.html';
+            });
+
+            document.getElementById('form-receta').addEventListener('submit', () => {
+                const insumoId = Number(selInsumo.value);
+                const cantidad = parseFloat(inputCant.value);
+                if (!insumoId || !(cantidad > 0)) return;
+
+                if (editandoId !== null) {
+                    Object.assign(lineas.find(x => x.id === editandoId), { insumoId, cantidad });
+                } else {
+                    const id = Math.max(0, ...lineas.map(x => x.id)) + 1;
+                    lineas.push({ id, insumoId, cantidad, baja: false });
+                }
+                actualizar();
+            });
+
+            render();
+        }
+    </script>
+
+</body>
+</html>
